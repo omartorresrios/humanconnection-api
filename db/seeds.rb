@@ -6,7 +6,7 @@ omar = User.create!(
     fullname: "Omar Torres",
     city: "Lima",
     bio: "I'm a software engineer",
-    profile_picture: "http://www.my_profile_url.com",
+    profile_picture: "https://randomuser.me/api/portraits/thumb/men/75.jpg",
     email: "omartorres@example.com",
     password: "12345678"
   )
@@ -15,7 +15,7 @@ omar = User.create!(
     fullname: "Martha Dons",
     city: "Manchester",
     bio: "Philosopher at Cambridge",
-    profile_picture: "http://www.my_profile_url.com",
+    profile_picture: "https://randomuser.me/api/portraits/thumb/men/75.jpg",
     email: "martha@example.com",
     password: "12345678"
   )
