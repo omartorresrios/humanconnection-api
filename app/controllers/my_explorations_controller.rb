@@ -7,11 +7,11 @@ class MyExplorationsController < ApplicationController
       render json: explorations, each_serializer: ExplorationSerializer, status: 200
     end
   
-  #   def update
-  #     note = current_user.notes.find(params[:id])
-  #     note.update(note_params)
-  #     render nothing: true, status: 204
-  #   end
+    def update
+      exploration = User.find(1).explorations.find(params[:id])
+      exploration.update(exploration_params)
+      render nothing: true, status: 204
+    end
   
   def create
     new_exploration = Exploration.new(exploration_params)
