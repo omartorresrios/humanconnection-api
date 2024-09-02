@@ -6,7 +6,7 @@ omar = User.create!(
     fullname: "Omar Torres",
     city: "Lima",
     bio: "I'm a software engineer",
-    profile_picture: "https://randomuser.me/api/portraits/thumb/men/75.jpg",
+    picture: "https://randomuser.me/api/portraits/thumb/men/75.jpg",
     email: "omartorres@example.com",
     password: "12345678"
   )
@@ -14,8 +14,8 @@ omar = User.create!(
   martha = User.create!(
     fullname: "Martha Dons",
     city: "Manchester",
-    bio: "Philosopher at Cambridge",
-    profile_picture: "https://randomuser.me/api/portraits/thumb/men/75.jpg",
+    bio: "I'm a professor and philosopher at Cambridge University. In my spare time I love exploring other topics such as Politics, Economics and Intelligence. ",
+    picture: "https://randomuser.me/api/portraits/thumb/men/75.jpg",
     email: "martha@example.com",
     password: "12345678"
   )
@@ -23,7 +23,7 @@ omar = User.create!(
   # Martha's explorations
 
 marthaExploration1 = Exploration.create!(
-  text: "Exploration 1",
+  text: "What are the reason behind people working in tech and finance. I've worked for almost a year on this and I'm eager to explore these topics.",
   sources: ["http://www.some-url1.com", "http://www.some-url2.com", "http://www.some-url3.com"],
   user_id: martha.id
 )

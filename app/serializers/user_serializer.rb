@@ -1,5 +1,5 @@
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :fullname, :profile_picture, :bio, :city, :email
+  attributes :id, :fullname, :picture, :bio, :city, :email
 
   def id
     object.id.to_s

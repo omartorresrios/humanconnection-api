@@ -48,11 +48,11 @@ end
 
 gem "devise", "~> 4.9"
 gem 'active_model_serializers', '~> 0.10.14'
-# gem "omniauth-google-oauth2"
-# gem "omniauth-rails_csrf_protection"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
 gem 'bcrypt'
 gem 'rack-cors'
-# gem 'googleauth'
+gem 'googleauth'
 gem "sidekiq", "~> 7.2"
 gem "httparty"
 gem 'dotenv'

@@ -3,15 +3,15 @@ class MyExplorationsController < ApplicationController
   # before_action :authenticate_user!
 
   def all_explorations
-      explorations = Exploration.all#current_user.explorations
-      render json: explorations, each_serializer: ExplorationSerializer, status: 200
-    end
-  
-    def update
-      exploration = User.find(1).explorations.find(params[:id])
-      exploration.update(exploration_params)
-      render nothing: true, status: 204
-    end
+    explorations = Exploration.all#current_user.explorations
+    render json: explorations, each_serializer: ExplorationSerializer, status: 200
+  end
+
+  def update
+    exploration = User.find(1).explorations.find(params[:id])
+    exploration.update(exploration_params)
+    render json: exploration, status: 200
+  end
   
   def create
     new_exploration = Exploration.new(exploration_params)
