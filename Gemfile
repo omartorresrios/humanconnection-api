@@ -50,6 +50,7 @@ gem "devise", "~> 4.9"
 gem 'active_model_serializers', '~> 0.10.14'
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
+gem 'jwt'
 gem 'bcrypt'
 gem 'rack-cors'
 gem 'googleauth'

@@ -5,7 +5,8 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable
+         :recoverable, :rememberable, :validatable,
+         :omniauthable, omniauth_providers: [:google_oauth2]
 
   def self.from_google_payload(payload)
     where(email: payload['email']).first_or_create { |user|

@@ -1,29 +1,30 @@
 class MyExplorationsController < ApplicationController
 
-  # before_action :authenticate_user!
+  before_action :authorized
 
   def all_explorations
-    explorations = Exploration.all#current_user.explorations
+    explorations = current_user.explorations
     render json: explorations, each_serializer: ExplorationSerializer, status: 200
   end
 
   def update
-    exploration = User.find(1).explorations.find(params[:id])
+    exploration = current_user.explorations.find(params[:id])
     exploration.update(exploration_params)
     render json: exploration, status: 200
   end
   
   def create
     new_exploration = Exploration.new(exploration_params)
-    new_exploration.user_id = 1#current_user.id
+    new_exploration.user_id = current_user.id
     new_exploration.save
     render json: new_exploration, status: 200
   end
   
-  #   def destroy
-  #     note = current_user.notes.find(params[:id])
-  #     note.destroy
-  #   end
+  def destroy
+    exploration = current_user.explorations.find(params[:id])
+    exploration.destroy
+  end
+  
   private
 
     def exploration_params

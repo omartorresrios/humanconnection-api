@@ -309,6 +309,7 @@ DEPENDENCIES
   faker
   googleauth
   httparty
+  jwt
   omniauth-google-oauth2
   omniauth-rails_csrf_protection
   pg (~> 1.1)
