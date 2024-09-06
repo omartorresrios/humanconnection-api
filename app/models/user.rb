@@ -15,7 +15,7 @@ class User < ApplicationRecord
       user.email = payload['email']
       user.picture = payload['picture']
       user.city = ""
-      user.bio = "my bio"
+      user.bio = ""
       user.password = Devise.friendly_token[0, 20] if user.password.blank?
     }
   end
