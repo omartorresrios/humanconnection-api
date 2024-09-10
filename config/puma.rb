@@ -17,6 +17,8 @@ if ENV["RAILS_ENV"] == "production"
   worker_count = Integer(ENV.fetch("WEB_CONCURRENCY") { Concurrent.physical_processor_count })
   workers worker_count if worker_count > 1
 end
+workers 2
+preload_app!
 
 # Specifies the `worker_timeout` threshold that Puma will use to wait before
 # terminating a worker in development environments.

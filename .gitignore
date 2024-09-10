@@ -33,3 +33,5 @@
 /config/master.key
 /config/master.key.bak
 /config/credentials.yml.enc.bak
+
+sentence_transformer_setup/
