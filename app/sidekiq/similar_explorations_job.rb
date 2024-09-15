@@ -47,14 +47,14 @@ class SimilarExplorationsJob
 
   def apnsNotifyUser(payload)
     authorizer = Google::Auth::ServiceAccountCredentials.make_creds(
-      json_key_io: File.open(ENV['GOOGLE_APPLICATION_CREDENTIALS']),
+      json_key_io: File.open(ENV['FIREBASE_SDK_CREDENTIALS']),
       scope: 'https://www.googleapis.com/auth/firebase.messaging')
     token = authorizer.fetch_access_token!
     headers = {
       "Content-Type" => "application/json",
       "Authorization" => "Bearer #{token['access_token']}"
     }
-    HTTParty.post("https://fcm.googleapis.com/v1/projects/#{ENV['FIREBASE_PROJECT_ID']}/messages:send", body: payload.to_json, headers: headers)
+    response = HTTParty.post("https://fcm.googleapis.com/v1/projects/#{ENV['FIREBASE_PROJECT_ID']}/messages:send", body: payload.to_json, headers: headers)
   end
 
   def addNewExplorationToItsSimilarExplorationsAndNotifyTheirCreators(similarExplorationIds, currentUser, newExploration)
@@ -77,7 +77,7 @@ class SimilarExplorationsJob
       end
     }
     usersToNotify.each { |user|
-      Notification.create(recipient: user["user"], actor: currentUser, notifiable: newExploration, exploration: similarExplorations)
+      Notification.create(recipient: user["user"], actor: currentUser, notifiable: newExploration, explorations: similarExplorations)
       apnsNotifySimilarExplorationUser(user["user"], user["exploration_ids"], newExploration.id, currentUser.fullname)
     }
   end

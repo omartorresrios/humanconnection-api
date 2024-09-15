@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_07_150809) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_11_024123) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,6 +23,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_07_150809) do
     t.bigint "user_id", null: false
     t.text "similar_exploration_ids", default: [], array: true
     t.index ["user_id"], name: "index_explorations_on_user_id"
+  end
+
+  create_table "explorations_notifications", force: :cascade do |t|
+    t.bigint "exploration_id", null: false
+    t.bigint "notification_id", null: false
+    t.index ["exploration_id", "notification_id"], name: "index_expl_notifications_on_expl_id_and_notification_id"
   end
 
   create_table "notifications", force: :cascade do |t|
