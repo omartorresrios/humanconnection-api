@@ -13,15 +13,16 @@ class SimilarExplorationsJob
       newExploration = Exploration.find(newExplorationId)
       newExploration.similar_exploration_ids = similarExplorationIds
       newExploration.save
-      similarExplorations = Exploration.where(id: similarExplorationIds)
-      Notification.create(recipient: currentUser, actor: currentUser, notifiable: newExploration, explorations: similarExplorations)
-      apnsNotifyCurrentUserWhoCreatedTheExploration(currentUser, newExplorationId)
+      similarExplorationIds.each { |similarExplorationId|
+        Notification.create(recipient: currentUser, actor: currentUser, exploration: newExploration)
+        apnsNotifyCurrentUserWhoCreatedTheExploration(currentUser, newExploration.id)
+      }
       addNewExplorationToItsSimilarExplorationsAndNotifyTheirCreators(similarExplorationIds, currentUser, newExploration)
     end
   end
 
   def apnsNotifyCurrentUserWhoCreatedTheExploration(currentUser, newExplorationId)
-    unreadNotifications = Notification.where(recipient: currentUser).unread.count
+    unreadNotifications = Notification.where(exploration_id: newExplorationId).unread.count
     payload = {
       "message": {
         "token": "#{currentUser.fcm_token}",
@@ -50,11 +51,22 @@ class SimilarExplorationsJob
       json_key_io: File.open(ENV['FIREBASE_SDK_CREDENTIALS']),
       scope: 'https://www.googleapis.com/auth/firebase.messaging')
     token = authorizer.fetch_access_token!
+    token = authorizer.fetch_access_token!
+    puts "access token: #{token['access_token']}"
     headers = {
       "Content-Type" => "application/json",
       "Authorization" => "Bearer #{token['access_token']}"
     }
     response = HTTParty.post("https://fcm.googleapis.com/v1/projects/#{ENV['FIREBASE_PROJECT_ID']}/messages:send", body: payload.to_json, headers: headers)
+    if response.success?
+      puts "Notification sent successfully!"
+      puts "Response data: #{response.body}" # Print the response body
+    else
+      puts "Failed to send notification."
+      puts "Response code: #{response.code}"
+      puts "Response message: #{response.message}"
+      puts "Response body: #{response.body}" # Print the error details
+    end
   end
 
   def addNewExplorationToItsSimilarExplorationsAndNotifyTheirCreators(similarExplorationIds, currentUser, newExploration)
@@ -77,16 +89,19 @@ class SimilarExplorationsJob
       end
     }
     usersToNotify.each { |user|
-      Notification.create(recipient: user["user"], actor: currentUser, notifiable: newExploration, explorations: similarExplorations)
-      apnsNotifySimilarExplorationUser(user["user"], user["exploration_ids"], newExploration.id, currentUser.fullname)
+      user["exploration_ids"].each { |explorationId|
+        exploration = Exploration.find(explorationId)
+        Notification.create(recipient: user["user"], actor: currentUser, exploration: exploration)
+        apnsNotifySimilarExplorationUser(user["user"], explorationId, currentUser.fullname)
+      }
     }
   end
 
-  def apnsNotifySimilarExplorationUser(user, explorationIds, newExplorationId, currentUserFullname)
-    unreadNotifications = Notification.where(recipient: user).unread.count
+  def apnsNotifySimilarExplorationUser(otherUser, otherUserExplorationId, currentUserFullname)
+    unreadNotifications = Notification.where(exploration_id: otherUserExplorationId).unread.count
     payload = {
       "message": {
-        "token": "#{user.fcm_token}",
+        "token": "#{otherUser.fcm_token}",
         "notification": {
           "body": "#{currentUserFullname} just published an exploration similar to one of yours.",
           "title": "Start exploring"
@@ -100,11 +115,11 @@ class SimilarExplorationsJob
           }
         },
         "data": {
-          "exploration_ids": "#{explorationIds}",
-          "similar_exploration_id": "#{newExplorationId}"
+          "exploration_id": "#{otherUserExplorationId}"
         }
       }
     }
+    puts "payload: #{payload}"
     apnsNotifyUser(payload)
   end
 end

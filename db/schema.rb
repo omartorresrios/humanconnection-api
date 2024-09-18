@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_09_11_024123) do
+ActiveRecord::Schema[7.1].define(version: 2024_09_18_011346) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -35,11 +35,11 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_11_024123) do
     t.integer "recipient_id"
     t.integer "actor_id"
     t.datetime "read_at"
-    t.integer "notifiable_id"
-    t.text "notifiable_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "exploration_id"
     t.index ["actor_id"], name: "index_notifications_on_actor_id"
+    t.index ["exploration_id"], name: "index_notifications_on_exploration_id"
     t.index ["recipient_id"], name: "index_notifications_on_recipient_id"
   end
 
@@ -63,4 +63,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_09_11_024123) do
   end
 
   add_foreign_key "explorations", "users"
+  add_foreign_key "notifications", "explorations"
 end

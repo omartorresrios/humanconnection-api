@@ -12,6 +12,9 @@ Rails.application.routes.draw do
     post 'delete_exploration' => 'my_explorations#destroy'
     put 'update_profile' => 'my_profile#update'
     
+    # NotificationsController
+    post 'mark_all_notifications_as_read' => 'notifications#mark_all_as_read'
+
     # UsersController
     namespace :users do
       post 'auth/login' => 'authentication#valid_token'
