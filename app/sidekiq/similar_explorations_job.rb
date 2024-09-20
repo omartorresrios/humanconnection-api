@@ -23,7 +23,7 @@ class SimilarExplorationsJob
 
   def apnsNotifyCurrentUserWhoCreatedTheExploration(currentUser, newExplorationId)
     unreadNotifications = Notification.where(exploration_id: newExplorationId).unread.count
-    payload = {
+    notification_payload = {
       "message": {
         "token": "#{currentUser.fcm_token}",
         "notification": {
@@ -33,8 +33,13 @@ class SimilarExplorationsJob
         "apns": {
           "payload": {
             "aps": {
+              "alert": {
+                "title": "Keep exploring",
+                "body": "People with similar explorations to the one you just published.",
+              },
               "sound": "default",
-              "badge": unreadNotifications
+              "badge": unreadNotifications,
+              "content-available": 1
             }
           }
         },
@@ -43,7 +48,7 @@ class SimilarExplorationsJob
         }
       }
     }
-    apnsNotifyUser(payload)
+    apnsNotifyUser(notification_payload)
   end
 
   def apnsNotifyUser(payload)
@@ -62,6 +67,7 @@ class SimilarExplorationsJob
       puts "Notification sent successfully!"
       puts "Response data: #{response.body}" # Print the response body
     else
+      # it its 500, retry. so i guess checking notification was send to stop trying?
       puts "Failed to send notification."
       puts "Response code: #{response.code}"
       puts "Response message: #{response.message}"
@@ -99,7 +105,7 @@ class SimilarExplorationsJob
 
   def apnsNotifySimilarExplorationUser(otherUser, otherUserExplorationId, currentUserFullname)
     unreadNotifications = Notification.where(exploration_id: otherUserExplorationId).unread.count
-    payload = {
+    notification_payload = {
       "message": {
         "token": "#{otherUser.fcm_token}",
         "notification": {
@@ -109,8 +115,13 @@ class SimilarExplorationsJob
         "apns": {
           "payload": {
             "aps": {
+              "alert": {
+                "title": "Start exploring",
+                "body": "#{currentUserFullname} just published an exploration similar to one of yours.",
+              },
               "sound": "default",
-              "badge": unreadNotifications
+              "badge": unreadNotifications,
+              "content-available": 1
             }
           }
         },
@@ -119,7 +130,6 @@ class SimilarExplorationsJob
         }
       }
     }
-    puts "payload: #{payload}"
-    apnsNotifyUser(payload)
+    apnsNotifyUser(notification_payload)
   end
 end
