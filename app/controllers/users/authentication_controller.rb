@@ -6,8 +6,9 @@ class Users::AuthenticationController < ApplicationController
         @current_user = User.from_google_payload(payload)
         sign_in(@current_user)
         render json: @current_user, serializer: UserSerializer, status: 200
-      rescue Google::Auth::IDTokens::VerificationError
-        return nil
+      rescue Google::Auth::IDTokens::VerificationError => e
+        puts "JWT Verification Error: #{e.message}"
+        nil
       end
     end
   
