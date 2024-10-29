@@ -1,22 +1,29 @@
 class User < ApplicationRecord
   has_many :explorations, dependent: :destroy
   
-  validates :fullname, :password, presence: true
+  validates :fullname, :city, :bio, presence: true
   validates :email, presence: true, uniqueness: true
-
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,
-         :omniauthable, omniauth_providers: [:google_oauth2]
+  validates :password, presence: true, on: :create, if: :password_required?
+  
+  devise :omniauthable, omniauth_providers: [:google_oauth2]
 
   def self.from_google_payload(payload)
-    where(email: payload['email']).first_or_create { |user|
-      user.google_id = payload['sub']
-      user.fullname = payload['given_name']
-      user.email = payload['email']
-      user.picture = payload['picture']
-      user.city = ""
-      user.bio = ""
-      user.password = Devise.friendly_token[0, 20] if user.password.blank?
-    }
+    user = find_or_initialize_by(email: payload['email'])
+    user.assign_attributes(
+      google_id: payload['sub'],
+      fullname: payload['given_name'],
+      picture: payload['picture'],
+      city: user.city.presence || "Not specified",
+      bio: user.bio.presence || "No bio yet"
+    )
+    user.save(validate: false)
+    user
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error "Failed to create/update user: #{e.message}"
+    nil
+  end
+
+  def password_required?
+    google_id.blank? && super
   end
 end

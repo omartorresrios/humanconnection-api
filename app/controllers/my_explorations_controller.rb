@@ -1,6 +1,6 @@
 class MyExplorationsController < ApplicationController
 
-  before_action :authorized
+  before_action :authenticate_request
 
   def all_explorations
     explorations = current_user.explorations

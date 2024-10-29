@@ -1,6 +1,6 @@
 class NotificationsController < ApplicationController
 
-  before_action :authorized
+  before_action :authenticate_request
 
   def mark_all_as_read
     unreadNotifications = Notification.where(recipient: current_user).unread
