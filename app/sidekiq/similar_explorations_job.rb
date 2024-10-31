@@ -13,10 +13,8 @@ class SimilarExplorationsJob
       newExploration = Exploration.find(newExplorationId)
       newExploration.similar_exploration_ids = similarExplorationIds
       newExploration.save
-      similarExplorationIds.each { |similarExplorationId|
-        Notification.create(recipient: currentUser, actor: currentUser, exploration: newExploration)
-        apnsNotifyCurrentUserWhoCreatedTheExploration(currentUser, newExploration.id)
-      }
+      Notification.create(recipient: currentUser, actor: currentUser, exploration: newExploration)
+      apnsNotifyCurrentUserWhoCreatedTheExploration(currentUser, newExploration.id)
       addNewExplorationToItsSimilarExplorationsAndNotifyTheirCreators(similarExplorationIds, currentUser, newExploration)
     end
   end
@@ -65,20 +63,20 @@ class SimilarExplorationsJob
     response = HTTParty.post("https://fcm.googleapis.com/v1/projects/#{ENV['FIREBASE_PROJECT_ID']}/messages:send", body: payload.to_json, headers: headers)
     if response.success?
       puts "Notification sent successfully!"
-      puts "Response data: #{response.body}" # Print the response body
+      puts "Response data: #{response.code}"
+      puts "Response data: #{response.body}"
     else
       # it its 500, retry. so i guess checking notification was send to stop trying?
       puts "Failed to send notification."
       puts "Response code: #{response.code}"
       puts "Response message: #{response.message}"
-      puts "Response body: #{response.body}" # Print the error details
+      puts "Response body: #{response.body}"
     end
   end
 
   def addNewExplorationToItsSimilarExplorationsAndNotifyTheirCreators(similarExplorationIds, currentUser, newExploration)
     usersToNotify = []
     userHash = { "user" => nil, "exploration_ids" => [] }
-    similarExplorations = Exploration.where(id: similarExplorationIds)
     similarExplorationIds.each { |explorationId|
       exploration = Exploration.find(explorationId)
       exploration.similar_exploration_ids << newExploration.id
@@ -95,6 +93,9 @@ class SimilarExplorationsJob
       end
     }
     usersToNotify.each { |user|
+      # For each affected exploration of the same user
+      # Example: Current user (Omar) has created a new exploration, and Brescia, has 3 explorations that are
+      # related to Omar's new exploration. 
       user["exploration_ids"].each { |explorationId|
         exploration = Exploration.find(explorationId)
         Notification.create(recipient: user["user"], actor: currentUser, exploration: exploration)
@@ -126,7 +127,7 @@ class SimilarExplorationsJob
           }
         },
         "data": {
-          "exploration_id": "#{otherUserExplorationId}"
+          "exploration_id": "#{otherUserExplorationId}",
         }
       }
     }

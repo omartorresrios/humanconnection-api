@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   
   scope '/api' do
     #MyExplorationsController
-    get 'all_explorations' => 'my_explorations#all_explorations'
+    get 'all_explorations_with_similar' => 'my_explorations#all_explorations_with_similar'
+    get 'similar_explorations' => 'my_explorations#similar_explorations'
     put 'update_exploration' => 'my_explorations#update'
     post 'create_exploration' => 'my_explorations#create'
     post 'delete_exploration' => 'my_explorations#destroy'

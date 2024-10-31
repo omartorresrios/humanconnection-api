@@ -1,15 +1,13 @@
 class ExplorationSerializer < ActiveModel::Serializer
-  attributes :id, :text, :sources, :shared_explorations
+  attributes :id, :text, :sources
   belongs_to :user, serializer: UserSerializer
+  has_many :similar_explorations
 
   def id
     object.id.to_s
   end
 
-  def shared_explorations
-    sharedExplorations = Exploration.where(id: object.shared_exploration_ids)
-    sharedExplorations.map do |exploration|
-      ExplorationSerializer.new(exploration)
-    end
+  def similar_explorations
+    Exploration.where(id: object.similar_exploration_ids)
   end
 end
